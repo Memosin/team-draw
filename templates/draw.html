@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f5f8f5">
+  <title>{{ draw.title }} | {{ config.APP_NAME }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="/">{{ config.APP_NAME }}</a>
+  </header>
+
+  <main class="page-shell result-shell">
+    <section class="result-heading">
+      <div>
+        <p class="eyebrow"><span class="eyebrow-mark"></span> THE DRAW IS SET</p>
+        <h1>{{ draw.title }}</h1>
+        <p class="intro-copy">{{ draw.teams|length }} teams <span class="dot-separator">/</span> {{ draw.participant_count }} {{ draw.participant_label|lower }} <span class="dot-separator">/</span> max {{ draw.max_team_size }} per team</p>
+      </div>
+      <div class="result-actions">
+        <a class="button button-primary" href="{{ url_for('download_pdf', token=request.view_args.token) }}">Download PDF <span aria-hidden="true">&#8595;</span></a>
+        <a class="button button-secondary" href="/">New draw</a>
+      </div>
+    </section>
+
+    <section class="share-strip" aria-label="Share this draw">
+      <div><span class="share-label">SHARE LINK</span><span class="share-hint">Anyone with this link can view the saved names.</span></div>
+      <div class="share-control">
+        <input id="share-url" type="text" value="{{ share_url }}" readonly aria-label="Share link">
+        <button class="copy-button" type="button" data-copy-link>Copy link</button>
+      </div>
+      <span class="copy-status" aria-live="polite"></span>
+    </section>
+
+    <section class="teams-section" aria-label="Teams">
+      <div class="section-bar"><span>02 / TEAMS</span><span>CAPTAIN COUNTS TOWARD TEAM SIZE</span></div>
+      <div class="team-grid">
+        {% for team in draw.teams %}
+        <article class="team-card">
+          <div class="team-card-top"><h2>{{ team.name }}</h2><span>{{ team.participants|length + 1 }} / {{ draw.max_team_size }}</span></div>
+          <div class="captain-row"><span class="person-role">{{ draw.captain_label|upper }}</span><strong>{{ team.captain }}</strong></div>
+          {% if team.participants %}
+          <ul class="member-list">
+            {% for name in team.participants %}<li>{{ name }}</li>{% endfor %}
+          </ul>
+          {% else %}
+          <p class="empty-team">No {{ draw.participant_label|lower }} assigned.</p>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="overflow-section" aria-label="Overflow participants">
+      <div class="overflow-heading"><div><p class="eyebrow">03 / ORGANIZER REVIEW</p><h2>Overflow <span>{{ draw.overflow|length }}</span></h2></div><p>Place these names where they fit.</p></div>
+      {% if draw.overflow %}
+      <ul class="overflow-list">{% for name in draw.overflow %}<li>{{ name }}</li>{% endfor %}</ul>
+      {% else %}
+      <p class="no-overflow">Everyone fits within the team limits.</p>
+      {% endif %}
+    </section>
+    <p class="saved-stamp">SAVED {{ draw.created_at }}</p>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

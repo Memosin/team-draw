@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f8f5">
+  <title>New draw | {{ settings.app_name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="/" aria-label="{{ settings.app_name }} home">{{ settings.app_name }}</a>
+  </header>
+
+  <main class="page-shell">
+    <section class="page-intro" aria-labelledby="page-title">
+      <h1 id="page-title">Create a<br><span>draw.</span></h1>
+    </section>
+
+    <section class="builder" aria-label="Create a team draw">
+      {% if errors %}
+      <div class="error-box" role="alert">
+        {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+      </div>
+      {% endif %}
+
+      <form action="{{ url_for('create_draw') }}" method="post" class="draw-form">
+        <label class="field title-field">
+          <span>Draw name</span>
+          <input name="title" maxlength="100" value="{{ values.get('title', '') if values else '' }}" placeholder="Fishing tournament" required>
+        </label>
+
+        <div class="roster-grid">
+          <label class="field roster-field">
+            <span>{{ settings.captain_label }}</span>
+            <textarea name="captains" rows="8" maxlength="5200" placeholder="Alex, Morgan, Sam" required>{{ values.get('captains', '') if values else '' }}</textarea>
+          </label>
+          <label class="field roster-field">
+            <span>{{ settings.participant_label }}</span>
+            <textarea name="participants" rows="8" maxlength="51000" placeholder="Jamie, Taylor, Jordan"></textarea>
+          </label>
+        </div>
+
+        <div class="form-bottom">
+          <label class="field size-field">
+            <span>Maximum team size <small>INCLUDING CAPTAIN</small></span>
+            <input type="number" name="max_team_size" min="2" max="50" value="{{ values.get('max_team_size', '6') if values else '6' }}" required>
+          </label>
+          <p class="capacity-note">Extra names stay visible as overflow for the organizer to place.</p>
+        </div>
+
+        <div class="submit-row">
+          <button class="button button-primary" type="submit">Draw &amp; save <span aria-hidden="true">&#8599;</span></button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+</body>
+</html>

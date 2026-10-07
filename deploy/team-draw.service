@@ -1,0 +1,18 @@
+[Unit]
+Description=Team Draw web app (gunicorn)
+After=network.target
+
+[Service]
+User=deployuser
+Group=deployuser
+WorkingDirectory=/home/deployuser/apps/team-draw
+EnvironmentFile=/home/deployuser/apps/team-draw/.env
+ExecStart=/home/deployuser/apps/team-draw/.venv/bin/gunicorn --workers 1 --threads 2 --bind unix:/run/team-draw/team-draw.sock app:app
+Restart=always
+RestartSec=5
+PrivateTmp=true
+RuntimeDirectory=team-draw
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target
